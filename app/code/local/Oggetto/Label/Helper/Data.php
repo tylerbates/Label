@@ -1,25 +1,109 @@
 <?php
 
+/**
+ * Oggetto products labels extension for Magento
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the Open Software License (OSL 3.0)
+ * that is bundled with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://opensource.org/licenses/osl-3.0.php
+ *
+ * DISCLAIMER
+ *
+ * Do not edit or add to this file if you wish to upgrade
+ * the Oggetto Label module to newer versions in the future.
+ * If you wish to customize the Oggetto Label module for your needs
+ * please refer to http://www.magentocommerce.com for more information.
+ *
+ * @category   Oggetto
+ * @package    Oggetto_Label
+ * @copyright  Copyright (C) 2011 Oggetto Web ltd (http://oggettoweb.com/)
+ * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
+ */
+
+/**
+ * Extends advansed search result block to add label attribute
+ *
+ * @category   Oggetto
+ * @package    Oggetto_Label
+ * @subpackage Helper
+ * @author     Denis Obukhov <denis.obukhov@oggettoweb.com>
+ */
 class Oggetto_Label_Helper_Data extends Mage_Core_Helper_Abstract
 {
-
+    /**
+     * Label position
+     *
+     * @var string
+     */
     protected $_position;
+
+    /**
+     * Product entity
+     *
+     * @var Mage_Eav_Model_Entity_Product
+     */
     protected $_product;
+
+    /**
+     * Lable image size
+     *
+     * @var int
+     */
     protected $_size;
+
+    /**
+     * Label image
+     *
+     * @var string
+     */
     protected $_image;
+
+    /**
+     * Current page type
+     *
+     * @var string
+     */
     protected $_page;
+
+    /**
+     * Label type
+     *
+     * @var int
+     */
     protected $_labeltype;
+
+    /**
+     * Is label displayed
+     *
+     * @var bool
+     */
     protected $_display;
+
+    /**
+     * Label html
+     *
+     * @var string
+     */
     protected $_label;
+
+    /**
+     * Is label need to be shown
+     * 
+     * @var int
+     */
     protected $_show = 0;
 
-    /* get label if it is
-     * 
-     * $_product product we working with
-     * $_page category/product
-     * $_size size of the image
+    /**
+     * Returns label if it is
+     *
+     * @param object $product product we working with
+     * @param text $page category/product
+     * @param int $size
+     * @return text
      */
-
     public function getLabel($product, $page, $size)
     {
         $this->_labeltype = $product->getIsLabel();
@@ -42,6 +126,9 @@ class Oggetto_Label_Helper_Data extends Mage_Core_Helper_Abstract
         return $this->_label;
     }
 
+    /**
+     *  Get custom label
+     */
     public function getCustomLabel()
     {
         $this->_display = $this->_product->getLabelDisplay();
@@ -54,6 +141,9 @@ class Oggetto_Label_Helper_Data extends Mage_Core_Helper_Abstract
             $this->_image = 0;
     }
 
+    /**
+     * Get one of default labels
+     */
     public function getDefaultLabel()
     {
         $this->_display = Mage::getStoreConfig('label/label_group' . $this->_labeltype . '/label_display' . $this->_labeltype);
@@ -61,6 +151,11 @@ class Oggetto_Label_Helper_Data extends Mage_Core_Helper_Abstract
         $this->getImage(Mage::getStoreConfig('label/label_group' . $this->_labeltype . '/label_image' . $this->_labeltype));
     }
 
+    /**
+     * Set label position
+     *
+     * @param string $position
+     */
     public function setPosition($position)
     {
         switch ($position) {
@@ -82,6 +177,11 @@ class Oggetto_Label_Helper_Data extends Mage_Core_Helper_Abstract
         }
     }
 
+    /**
+     * Return label image
+     *
+     * @param string $image
+     */
     public function getImage($image)
     {
         if ($this->_page == 'category')
@@ -94,6 +194,9 @@ class Oggetto_Label_Helper_Data extends Mage_Core_Helper_Abstract
             $this->_image = Mage::helper('catalog/image')->init($this->_product, 'thumbnail', $image);
     }
 
+    /**
+     * Return full label code
+     */
     public function returnLabel()
     {
         if ($this->_show && $this->_image)
@@ -104,6 +207,10 @@ class Oggetto_Label_Helper_Data extends Mage_Core_Helper_Abstract
         else
             $this->_label = null;
     }
+
+    /**
+     * Check should we show label or not
+     */
 
     public function toShow()
     {
