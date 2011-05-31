@@ -33,62 +33,56 @@
  */
 class Oggetto_Label_Helper_Data extends Mage_Core_Helper_Abstract
 {
+
     /**
      * Label position
      *
      * @var string
      */
     protected $_position;
-
     /**
      * Product entity
      *
      * @var Mage_Eav_Model_Entity_Product
      */
     protected $_product;
-
     /**
      * Lable image size
      *
      * @var int
      */
-    protected $_size;
-
+    protected $_sizeX;
+    protected $_sizeY;
     /**
      * Label image
      *
      * @var string
      */
     protected $_image;
-
     /**
      * Current page type
      *
      * @var string
      */
     protected $_page;
-
     /**
      * Label type
      *
      * @var int
      */
     protected $_labeltype;
-
     /**
      * Is label displayed
      *
      * @var bool
      */
     protected $_display;
-
     /**
      * Label html
      *
      * @var string
      */
     protected $_label;
-
     /**
      * Is label need to be shown
      * 
@@ -101,7 +95,7 @@ class Oggetto_Label_Helper_Data extends Mage_Core_Helper_Abstract
      *
      * @param object $product product we working with
      * @param text $page category/product
-     * @param int $size
+     * @param int|array $size
      * @return text
      */
     public function getLabel($product, $page, $size)
@@ -109,7 +103,18 @@ class Oggetto_Label_Helper_Data extends Mage_Core_Helper_Abstract
         $this->_labeltype = $product->getIsLabel();
         $this->_product = $product;
         $this->_page = $page;
-        $this->_size = $size;
+        
+        if (is_array($size)) {
+            if (count($size) == 2) {
+                $this->_sizeX = $size['0'];
+                $this->_sizeY = $size['1'];
+            } else {
+                $this->_sizeX = $this->_sizeY = $size['0'];
+            }
+        } else {
+            $this->_sizeX = $this->_sizeY = $size;
+        }
+        
         switch ($this->_labeltype) {
             case 0:
                 return;
@@ -186,10 +191,10 @@ class Oggetto_Label_Helper_Data extends Mage_Core_Helper_Abstract
     {
         if ($this->_page == 'category')
             $this->_image = Mage::helper('catalog/image')->init($this->_product, 'thumbnail', $image)
-                            ->constrainOnly(TRUE)
-                            ->keepAspectRatio(TRUE)
-                            ->keepFrame(FALSE)
-                            ->resize(60);
+                ->constrainOnly(TRUE)
+                ->keepAspectRatio(TRUE)
+                ->keepFrame(FALSE)
+                ->resize(60);
         else
             $this->_image = Mage::helper('catalog/image')->init($this->_product, 'thumbnail', $image);
     }
@@ -201,9 +206,9 @@ class Oggetto_Label_Helper_Data extends Mage_Core_Helper_Abstract
     {
         if ($this->_show && $this->_image)
             $this->_label = '<div class="product-img-label" style="position:absolute; height:' .
-                    $this->_size . 'px; width: ' .
-                    $this->_size . 'px; top:12px; left:10px; z-index: 70; pointer-events: none;background: url(\'' .
-                    $this->_image . '\') ' . $this->_position . ' no-repeat"></div>';
+                $this->_sizeX . 'px; width: ' .
+                $this->_sizeY . 'px; top:12px; left:10px; z-index: 70; pointer-events: none;background: url(\'' .
+                $this->_image . '\') ' . $this->_position . ' no-repeat"></div>';
         else
             $this->_label = null;
     }
@@ -211,7 +216,6 @@ class Oggetto_Label_Helper_Data extends Mage_Core_Helper_Abstract
     /**
      * Check should we show label or not
      */
-
     public function toShow()
     {
         if ($this->_display == 1 || $this->_display == 3 && $this->_page == 'category')
@@ -223,3 +227,4 @@ class Oggetto_Label_Helper_Data extends Mage_Core_Helper_Abstract
     }
 
 }
+
